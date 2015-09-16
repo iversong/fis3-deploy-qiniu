@@ -7,7 +7,7 @@ FIS 部署七牛云存储插件，提供静态资源部署能力，CDN加速。
 全局安装或者本地安装都可以。
 
 ```
-npm install fis3-deploy-qiniu
+npm install fis3-deploy-qiniu or npm install fis3-deploy-qiniu -g
 ```
 
 ## 使用方法
@@ -17,7 +17,6 @@ npm install fis3-deploy-qiniu
 ```js
 fis.match('*.js', {
     deploy: fis.plugin('qiniu', {
-        //Your qiniu Access Key
         accessKey: '',  //Your qiniu Access Key
         secretKey: '',  //Your qiniu Secret Key
         bucket: 'my-test-bucket'
