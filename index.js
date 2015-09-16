@@ -90,13 +90,12 @@ module.exports = function(options, modified, total, callback, next) {
 	qiniu.conf.ACCESS_KEY = options.accessKey;
 	qiniu.conf.SECRET_KEY = options.secretKey;
 
-	var keyname = file.subpath; // 文件基于项目 root 的绝对路径,即key
 	var uptoken = uptoken(options.bucket);
 	var steps = [];
 
 	modified.forEach(function(file) {
 		var reTryCount = options.retry;
-
+		var keyname = file.subpath; // 文件基于项目 root 的绝对路径,即key
 		steps.push(function(next) {
 		  	var _upload = arguments.callee;
 
