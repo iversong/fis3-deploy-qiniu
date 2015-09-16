@@ -16,14 +16,18 @@ function getUptoken(bucketname) {
 /**
  * 直接上传二进制流
  */
-function uploadBuf(body, key, uptoken) {
+function uploadBuf(body, key, uptoken, callback) {
   	var subpath = key;
   	var extra = new qiniu.io.PutExtra();
- 	if(file.isJsLike)
+  	if(body.isHtmlLike)
+	{
+		callback(); //html默认不发布
+	}
+ 	if(body.isJsLike)
 	{
 		extra.mimeType = "application/javascript";
 	}
-	if(file.isCssLike)
+	if(body.isCssLike)
 	{
 		extra.mimeType = "text/css";
 	}
@@ -51,6 +55,10 @@ function uploadBuf(body, key, uptoken) {
 function uploadFile(file, key, uptoken,callback) {
 	var subpath = key;
   	var extra = new qiniu.io.PutExtra();
+	if(file.isHtmlLike)
+	{
+		callback(); //html默认不发布
+	}
 	if(file.isJsLike)
 	{
 		extra.mimeType = "application/javascript";
@@ -60,7 +68,7 @@ function uploadFile(file, key, uptoken,callback) {
 		extra.mimeType = "text/css";
 	}
 
-	qiniu.io.putFile(uptoken, key, file, extra, function(err, ret) {
+	qiniu.io.putFile(uptoken, key, file.realpath, extra, function(err, ret) {
 		if(err){
             console.log('error:', err);
         } else {
