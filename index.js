@@ -8,7 +8,7 @@ var qiniu = require('qiniu');
 /**
  * 生成上传凭证并返回
  */
-function uptoken(bucketname) {
+function getUptoken(bucketname) {
 	var putPolicy = new qiniu.rs.PutPolicy(bucketname);
 	return putPolicy.token();
 }
@@ -17,23 +17,32 @@ function uptoken(bucketname) {
  * 直接上传二进制流
  */
 function uploadBuf(body, key, uptoken) {
-  var extra = new qiniu.io.PutExtra();
-  //extra.params = params;
-  //extra.mimeType = mimeType;
-  //extra.crc32 = crc32;
-  //extra.checkCrc = checkCrc;
+  	var subpath = key;
+  	var extra = new qiniu.io.PutExtra();
+ 	if(file.isJsLike)
+	{
+		extra.mimeType = "application/javascript";
+	}
+	if(file.isCssLike)
+	{
+		extra.mimeType = "text/css";
+	}
 
-  qiniu.io.put(uptoken, key, body, extra, function(err, ret) {
-    if (!err) {
-      // 上传成功， 处理返回值
-      console.log(ret.key, ret.hash);
-      // ret.key & ret.hash
-    } else {
-      // 上传失败， 处理返回代码
-      console.log(err)
-      // http://developer.qiniu.com/docs/v6/api/reference/codes.html
-    }
-  });
+	qiniu.io.put(uptoken, key, body, extra, function(err, ret) {
+		if(err){
+            console.log('error:', err);
+        } else {
+            var time = '[' + fis.log.now(true) + ']';
+            process.stdout.write(
+                ' uploadQiniu - '.green.bold +
+                time.grey + ' ' + 
+                subpath.replace(/^\//, '') +
+                ' >> '.yellow.bold +
+               	ret.key + '\n'
+            );
+            callback();
+        }
+	});
 }
 
 /**
@@ -42,10 +51,6 @@ function uploadBuf(body, key, uptoken) {
 function uploadFile(file, key, uptoken,callback) {
 	var subpath = key;
   	var extra = new qiniu.io.PutExtra();
-  //extra.params = params;
-  //extra.mimeType = mimeType;
-  //extra.crc32 = crc32;
-  //extra.checkCrc = checkCrc;
 	if(file.isJsLike)
 	{
 		extra.mimeType = "application/javascript";
@@ -61,12 +66,11 @@ function uploadFile(file, key, uptoken,callback) {
         } else {
             var time = '[' + fis.log.now(true) + ']';
             process.stdout.write(
-                ' uploadoss - '.green.bold +
+                ' uploadQiniu - '.green.bold +
                 time.grey + ' ' + 
                 subpath.replace(/^\//, '') +
                 ' >> '.yellow.bold +
-               ret.key + "---"+ret.mimeType+
-                '\n'
+               	ret.key + '\n'
             );
             callback();
         }
@@ -90,7 +94,7 @@ module.exports = function(options, modified, total, callback, next) {
 	qiniu.conf.ACCESS_KEY = options.accessKey;
 	qiniu.conf.SECRET_KEY = options.secretKey;
 
-	var uptoken = uptoken(options.bucket);
+	var uptoken = getUptoken(options.bucket);
 	var steps = [];
 
 	modified.forEach(function(file) {
@@ -99,7 +103,7 @@ module.exports = function(options, modified, total, callback, next) {
 		steps.push(function(next) {
 		  	var _upload = arguments.callee;
 
-		  	uploadFile(file, keyname, uptoken, function(error){
+		  	uploadBuf(file, keyname, uptoken, function(error){
 		  		if (error) {
 			      	if (!--reTryCount) {
 			        	throw new Error(error);
