@@ -1,0 +1,21 @@
+{
+  "name": "fis3-deploy-qiniu",
+  "version": "1.0.0",
+  "description": "fis3 deploy plugin for qiniu",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/iversong/fis3-deploy-qiniu.git"
+  },
+  "keywords": [
+    "fis3",
+    "deploy",
+	"plugin"
+  ],
+  "dependencies": {
+    "qiniu": "6.1.8"
+  },
+  "author": "iversong",
+  "license": "BSD",
+  "homepage": "https://github.com/iversong/fis3-deploy-qiniu"
+}
