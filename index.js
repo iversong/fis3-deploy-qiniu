@@ -16,18 +16,19 @@ function getUptoken(bucketname) {
 /**
  * 直接上传二进制流
  */
-function uploadBuf(body, key, uptoken, callback) {
+function uploadBuf(file, key, uptoken, callback) {
   	var subpath = key;
   	var extra = new qiniu.io.PutExtra();
-  	if(body.isHtmlLike)
+  	var body = file.getContent();
+  	if(file.isHtmlLike)
 	{
 		callback(); //html默认不发布
 	}
- 	if(body.isJsLike)
+ 	if(file.isJsLike)
 	{
 		extra.mimeType = "application/javascript";
 	}
-	if(body.isCssLike)
+	if(file.isCssLike)
 	{
 		extra.mimeType = "text/css";
 	}
@@ -102,12 +103,12 @@ module.exports = function(options, modified, total, callback, next) {
 	qiniu.conf.ACCESS_KEY = options.accessKey;
 	qiniu.conf.SECRET_KEY = options.secretKey;
 
-	var uptoken = getUptoken(options.bucket);
 	var steps = [];
 
 	modified.forEach(function(file) {
 		var reTryCount = options.retry;
 		var keyname = file.subpath; // 文件基于项目 root 的绝对路径,即key
+		var uptoken = getUptoken(options.bucket+':'+keyname);
 		steps.push(function(next) {
 		  	var _upload = arguments.callee;
 
