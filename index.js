@@ -16,14 +16,10 @@ function getUptoken(bucketname) {
 /**
  * 直接上传二进制流
  */
-function uploadBuf(file, key, uptoken, callback) {
-  	var subpath = key;
+function uploadBuf(uptoken, release, content, file, callback) {
+	var subpath = file.subpath;
+ 	var objkey = release.replace(/^\//, '');
   	var extra = new qiniu.io.PutExtra();
-  	var body = file.getContent();
-  	if(file.isHtmlLike)
-	{
-		callback(); //html默认不发布
-	}
  	if(file.isJsLike)
 	{
 		extra.mimeType = "application/javascript";
@@ -33,43 +29,7 @@ function uploadBuf(file, key, uptoken, callback) {
 		extra.mimeType = "text/css";
 	}
 
-	qiniu.io.put(uptoken, key, body, extra, function(err, ret) {
-		if(err){
-            console.log('error:', err);
-        } else {
-            var time = '[' + fis.log.now(true) + ']';
-            process.stdout.write(
-                ' uploadQiniu - '.green.bold +
-                time.grey + ' ' + 
-                subpath.replace(/^\//, '') +
-                ' >> '.yellow.bold +
-               	ret.key + '\n'
-            );
-            callback();
-        }
-	});
-}
-
-/**
- * 文件方式上传
- */
-function uploadFile(file, key, uptoken,callback) {
-	var subpath = key;
-  	var extra = new qiniu.io.PutExtra();
-	if(file.isHtmlLike)
-	{
-		callback(); //html默认不发布
-	}
-	if(file.isJsLike)
-	{
-		extra.mimeType = "application/javascript";
-	}
-	if(file.isCssLike)
-	{
-		extra.mimeType = "text/css";
-	}
-
-	qiniu.io.putFile(uptoken, key, file.realpath, extra, function(err, ret) {
+	qiniu.io.put(uptoken, objkey, content, extra, function(err, ret) {
 		if(err){
             console.log('error:', err);
         } else {
@@ -107,12 +67,12 @@ module.exports = function(options, modified, total, callback, next) {
 
 	modified.forEach(function(file) {
 		var reTryCount = options.retry;
-		var keyname = file.subpath; // 文件基于项目 root 的绝对路径,即key
+		var keyname = file.getHashRelease().replace(/^\//, '');
 		var uptoken = getUptoken(options.bucket+':'+keyname);
 		steps.push(function(next) {
 		  	var _upload = arguments.callee;
 
-		  	uploadBuf(file, keyname, uptoken, function(error){
+		  	uploadBuf(uptoken, file.getHashRelease(), file.getContent(), file, function(error){
 		  		if (error) {
 			      	if (!--reTryCount) {
 			        	throw new Error(error);
