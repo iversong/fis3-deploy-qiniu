@@ -1,7 +1,7 @@
 {
   "name": "fis3-deploy-qiniu",
   "version": "1.0.0",
-  "description": "fis3 deploy plugin for qiniu",
+  "description": "fis3 deploy qiniu plugin",
   "main": "index.js",
   "repository": {
     "type": "git",
