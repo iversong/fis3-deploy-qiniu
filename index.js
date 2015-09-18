@@ -77,7 +77,7 @@ module.exports = function(options, modified, total, callback, next) {
 			      	if (!--reTryCount) {
 			        	throw new Error(error);
 			      	} else {
-			        	upload();
+			        	_upload();
 			      	}
 			    } else {
 			      	next(); //由于是异步的如果后续还需要执行必须调用 next
