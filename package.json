@@ -1,6 +1,6 @@
 {
   "name": "fis3-deploy-qiniu",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "fis3 deploy qiniu plugin",
   "main": "index.js",
   "repository": {
@@ -11,7 +11,7 @@
     "fis",
     "fis3",
     "deploy",
-	  "plugin",
+    "plugin",
     "qiniu"
   ],
   "dependencies": {
