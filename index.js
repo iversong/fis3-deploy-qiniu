@@ -32,6 +32,7 @@ function uploadBuf(uptoken, release, content, file, callback) {
 	qiniu.io.put(uptoken, objkey, content, extra, function(err, ret) {
 		if(err){
             console.log('error:', err);
+            callback(err);
         } else {
             var time = '[' + fis.log.now(true) + ']';
             process.stdout.write(
