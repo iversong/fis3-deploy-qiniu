@@ -63,6 +63,7 @@ module.exports = function(options, modified, total, callback, next) {
 	}
 	qiniu.conf.ACCESS_KEY = options.accessKey;
 	qiniu.conf.SECRET_KEY = options.secretKey;
+	qiniu.conf.UP_HOST = options.UP_HOST || qiniu.conf.UP_HOST
 
 	var steps = [];
 
