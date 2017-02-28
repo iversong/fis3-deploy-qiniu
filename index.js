@@ -5,6 +5,7 @@
 // 引入七牛 Node.js SDK
 var qiniu = require('qiniu');
 
+qiniu.conf.RPC_TIMEOUT = 10000;
 /**
  * 生成上传凭证并返回
  */
@@ -31,6 +32,13 @@ function uploadBuf(uptoken, release, content, file, callback) {
 
 	qiniu.io.put(uptoken, objkey, content, extra, function(err, ret) {
 		if(err){
+            var time = '[' + fis.log.now(true) + ']';
+	    	process.stdout.write(
+                ' failUploadQiniu - '.green.bold +
+                time.grey + ' ' + 
+                subpath.replace(/^\//, '') +
+               	'\n'
+            );
             console.log('error:', err);
             callback(err);
         } else {
@@ -79,10 +87,17 @@ module.exports = function(options, modified, total, callback, next) {
 			      	if (!--reTryCount) {
 			        	throw new Error(error);
 			      	} else {
-			        	_upload();
+						var time = '[' + fis.log.now(true) + ']';
+						process.stdout.write(
+								'#' + reTryCount + ' retryuploadQiniu - '.green.bold +
+								time.grey + ' ' + 
+								file.subpath.replace(/^\//, '') +
+								'\n'
+								); 					
+						_upload(next);
 			      	}
 			    } else {
-			      	next(); //由于是异步的如果后续还需要执行必须调用 next
+		      		next(); //由于是异步的如果后续还需要执行必须调用 next
 			    }
 		  	});
 		});
