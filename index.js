@@ -52,10 +52,10 @@ function uploadBuf(uptoken, release, content, file, callback) {
  * @param  {Object}   options  插件配置
  * @param  {Object}   modified 修改了的文件列表（对应watch功能）
  * @param  {Object}   total    所有文件列表
- * @param  {Function} next     调用下一个插件
+ * @param  {Function} callback     调用下一个插件
  * @return {undefined}
  */
-module.exports = function(options, modified, total, callback, next) {
+module.exports = function(options, modified, total, callback) {
 	if (!options.accessKey && !options.secretKey) {
 		throw new Error('options.accessKey and options.secretKey is required!');
 	} else if (!options.bucket) {
@@ -79,10 +79,10 @@ module.exports = function(options, modified, total, callback, next) {
 			      	if (!--reTryCount) {
 			        	throw new Error(error);
 			      	} else {
-			        	_upload();
+			        	_upload(next);
 			      	}
 			    } else {
-			      	next(); //由于是异步的如果后续还需要执行必须调用 next
+			      	next();
 			    }
 		  	});
 		});
